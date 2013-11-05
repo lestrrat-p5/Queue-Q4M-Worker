@@ -3,5 +3,8 @@ Changes
 
 {{$NEXT}}
 
+0.02 2013-11-05T05:21:42Z
+  * Migrate to Minilla
+
 0.00001 - Apr 18, 2011
-    * Initial release
+  * Initial release

@@ -71,8 +71,8 @@
          "web" : "https://github.com/lestrrat/Queue-Q4M-Worker"
       }
    },
-   "version" : "0.00001",
+   "version" : "0.02",
    "x_contributors" : [
-      "lestrrat <lestrrat+github@gmail.com>"
+      "Daisuke Maki <lestrrat+github@gmail.com>"
    ]
 }
