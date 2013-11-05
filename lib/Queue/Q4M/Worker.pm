@@ -12,7 +12,7 @@ use Class::Accessor::Lite
     ) ]
 ;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 my $guard;
 BEGIN {
