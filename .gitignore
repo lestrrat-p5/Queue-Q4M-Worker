@@ -1,0 +1,8 @@
+/Queue-Q4M-Worker-*
+/.build
+/_build_params
+/Build
+/Build.bat
+!Build/
+!META.json
+!LICENSE
