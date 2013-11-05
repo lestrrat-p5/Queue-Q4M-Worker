@@ -122,21 +122,22 @@ sub run_single {
 
     $install_sig->();
 
+    my ($stmt, @binds) = $self->_get_sql();
+    $sth = $dbh->prepare($stmt);
+
+    my $queue_end_sth = $dbh->prepare("SELECT queue_end()");
+
     my $default_sig = POSIX::SigAction->new('DEFAULT');
     while ( $self->should_loop ) {
-        my ($stmt, @binds) = $self->_get_sql();
-        $sth = $dbh->prepare( $stmt );
         my $rv = $sth->execute( @binds );
         if ( $rv == 0 ) { # nothing
             $sth->finish;
             next;
         }
 
-        while (
-            ! $self->signal_received &&
-            $self->should_loop &&
-            ( my $h = $sth->fetchrow_hashref )
-        ) {
+        if ( my $h = $sth->fetchrow_hashref ) {
+            $queue_end_sth->execute();
+
             # while the consumer is working, we need to reset the
             # signal handlers that we previously set
             my $gobj = $guard->($install_sig);
