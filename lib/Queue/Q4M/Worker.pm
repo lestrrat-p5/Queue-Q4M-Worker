@@ -110,7 +110,7 @@ sub run_multi {
         $pp->start(sub { $self->run_single });
     }
 
-    $pp->wait_all_chlidren()
+    $pp->wait_all_children()
 }
 
 sub run_single {
