@@ -1,4 +1,3 @@
-
 use strict;
 use Test::More;
 use Test::mysqld;
@@ -15,18 +14,17 @@ my $dbh = DBI->connect($mysqld->dsn, undef, undef, {
     AutoCommit => 1,
 });
 
-my @deploy_stmts = (
-    q|INSTALL PLUGIN queue SONAME 'libqueue_engine.so'|,
-    q|CREATE FUNCTION queue_wait RETURNS INT SONAME 'libqueue_engine.so'|,
-    q|CREATE FUNCTION queue_end RETURNS INT SONAME 'libqueue_engine.so'|,
-    q|CREATE FUNCTION queue_abort RETURNS INT SONAME 'libqueue_engine.so'|,
-    q|CREATE FUNCTION queue_rowid RETURNS INT SONAME 'libqueue_engine.so'|,
-    q|CREATE FUNCTION queue_set_srcid RETURNS INT SONAME 'libqueue_engine.so'|,
-    q|CREATE FUNCTION queue_compact RETURNS INT SONAME 'libqueue_engine.so'|,
-    q|CREATE TABLE queue ( args TEXT NOT NULL) ENGINE=Queue|,
-);
-foreach my $stmt (@deploy_stmts) {
-    $dbh->do( $stmt );
+my $has_queue = 0;
+my $sth = $dbh->prepare("SHOW PLUGINS");
+$sth->execute();
+while (my $plugin = $sth->fetchrow_array) {
+    if ($plugin eq 'QUEUE') {
+        $has_queue = 1;
+        last;
+    }
+}
+if (! $has_queue) {
+    plan(skip_all => "No Q4M Detected");
 }
 
 for( 1..10 ) {
