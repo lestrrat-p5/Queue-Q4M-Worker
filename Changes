@@ -2,6 +2,12 @@ Revision history for Perl module Queue::Q4M::Worker
 
 {{$NEXT}}
 
+0.04 2013-11-05T11:38:26Z
+  * Properly call queue_end()
+  * Implement min_requests_per_child and max_requests_per_child so
+    that each child worker terminates at random points
+  * Fix various typos
+
 0.03 2013-11-05T06:30:23Z
   * Fix silly typo
 
