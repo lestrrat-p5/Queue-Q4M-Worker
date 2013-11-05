@@ -7,7 +7,7 @@ use Class::Accessor::Lite
         dbh
         max_workers
         min_requests_per_child
-        max_reqeusts_per_child
+        max_requests_per_child
         signal_received
         sql
         _work_once
