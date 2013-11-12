@@ -2,6 +2,9 @@ Revision history for Perl module Queue::Q4M::Worker
 
 {{$NEXT}}
 
+0.05 2013-11-12T01:55:38Z
+  * Implement delay between jobs
+
 0.04 2013-11-05T11:38:26Z
   * Properly call queue_end()
   * Implement min_requests_per_child and max_requests_per_child so

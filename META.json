@@ -75,7 +75,7 @@
          "web" : "https://github.com/lestrrat/Queue-Q4M-Worker"
       }
    },
-   "version" : "0.04",
+   "version" : "0.05",
    "x_contributors" : [
       "Neil Bowers <neil@bowers.com>",
       "Daisuke Maki <lestrrat+github@gmail.com>"
