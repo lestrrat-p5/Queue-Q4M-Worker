@@ -47,10 +47,14 @@
          }
       },
       "runtime" : {
+         "recommends" : {
+            "Scope::Guard" : "0"
+         },
          "requires" : {
             "DBI" : "0",
             "POSIX" : "0",
-            "Parallel::Prefork" : "0"
+            "Parallel::Prefork" : "0",
+            "Time::HiRes" : "0"
          }
       },
       "test" : {
