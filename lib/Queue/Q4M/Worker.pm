@@ -197,7 +197,7 @@ sub run_single {
             $self->work_once( $h );
         }
         if (my $delay = $self->delay) {
-            Time::HiRes::sleep($delay);
+            Time::HiRes::sleep(rand($delay));
         }
     }
     POSIX::sigaction( SIGINT,  $default_sig );
