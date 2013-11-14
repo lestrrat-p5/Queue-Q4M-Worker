@@ -19,17 +19,17 @@ use Class::Accessor::Lite
 
 our $VERSION = '0.05';
 
-my $guard;
+my $GUARD_CB;
 BEGIN {
     if ( eval { require Scope::Guard } && !$@ ) {
-        $guard = \&Scope::Guard::guard;
+        $GUARD_CB = \&Scope::Guard::guard;
     } else {
         *Queue::Q4M::Worker::Guard::DESTROY = sub {
             if (! $_[0][0]) {
                 $_[0]->();
             }
         };
-        $guard = sub { bless [ 1, $_[0] ], 'Queue::Q4M::Worker::Guard' };
+        $GUARD_CB = sub { bless [ 1, $_[0] ], 'Queue::Q4M::Worker::Guard' };
     }
 }
 
@@ -189,7 +189,7 @@ sub run_single {
 
             # while the consumer is working, we need to reset the
             # signal handlers that we previously set
-            my $gobj = $guard->($install_sig);
+            my $gobj = $GUARD_CB->($install_sig);
             POSIX::sigaction( SIGINT,  $default_sig );
             POSIX::sigaction( SIGQUIT, $default_sig );
             POSIX::sigaction( SIGTERM, $default_sig );
