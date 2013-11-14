@@ -7,6 +7,7 @@ use Class::Accessor::Lite
     rw => [ qw(
         dbh
         delay
+        loop_iteration_cb
         max_workers
         min_requests_per_child
         max_requests_per_child
@@ -55,6 +56,15 @@ sub _get_sql {
         $stmt = $sql;
     }
     return ($stmt, @binds);
+}
+
+
+sub _get_loop_iteration_guard {
+    my $self = shift;
+    my $cb = $self->loop_iteration_cb();
+    if ($cb) {
+        return $cb->($self);
+    }
 }
 
 sub _get_dbh {
@@ -134,7 +144,7 @@ sub run_single {
     my $stop_at = int(rand($max_requests));
     $self->{stop_at} = $stop_at;
 
-    my $dbh = $self->_get_dbh();
+    my $dbh;
     my $sth;
     my $sigset = POSIX::SigSet->new( SIGINT, SIGQUIT, SIGTERM );
     my $cancel_q4m = POSIX::SigAction->new(sub {
@@ -152,13 +162,21 @@ sub run_single {
 
     $install_sig->();
 
-    my ($stmt, @binds) = $self->_get_sql();
-    $sth = $dbh->prepare($stmt);
-
-    my $queue_end_sth = $dbh->prepare("SELECT queue_end()");
-
     my $default_sig = POSIX::SigAction->new('DEFAULT');
-    while ( $self->should_loop ) {
+    while ($self->should_loop) {
+        # This is entirely optional. If you want do something that only
+        # has an effect during this particular iteration of the loop,
+        # you can create a guard here.
+        my $guard = $self->_get_loop_iteration_guard();
+
+        # This may seem like a waste, but sometimes you have multiple queues
+        # to fetch from, and you want multiplex between each database, so
+        # we fetch the database per-iteration
+        $dbh = $self->_get_dbh();
+
+        my ($stmt, @binds) = $self->_get_sql();
+        $sth = $dbh->prepare($stmt);
+
         my $rv = $sth->execute( @binds );
         if ( $rv == 0 ) { # nothing
             $sth->finish;
@@ -167,7 +185,7 @@ sub run_single {
 
         if ( my $h = $sth->fetchrow_hashref ) {
             $self->{processed}++;
-            $queue_end_sth->execute();
+            $dbh->do("SELECT queue_end()");
 
             # while the consumer is working, we need to reset the
             # signal handlers that we previously set
@@ -181,7 +199,6 @@ sub run_single {
         if (my $delay = $self->delay) {
             Time::HiRes::sleep($delay);
         }
-            
     }
     POSIX::sigaction( SIGINT,  $default_sig );
     POSIX::sigaction( SIGQUIT, $default_sig );
