@@ -5,6 +5,7 @@ use POSIX qw(:signal_h);
 use Time::HiRes ();
 use Class::Accessor::Lite
     rw => [ qw(
+        before_loop_cb
         dbh
         delay
         loop_iteration_cb
@@ -58,6 +59,14 @@ sub _get_sql {
     return ($stmt, @binds);
 }
 
+
+sub _get_before_loop_guard {
+    my $self = shift;
+    my $cb = $self->before_loop_cb();
+    if ($cb) {
+        return $cb->($self);
+    }
+}
 
 sub _get_loop_iteration_guard {
     my $self = shift;
@@ -162,6 +171,8 @@ sub run_single {
 
     $install_sig->();
 
+    # Run arbitrary code before loop. Optionally return a guard object
+    my $before_loop = $self->_get_before_loop_guard();
     my $default_sig = POSIX::SigAction->new('DEFAULT');
     while ($self->should_loop) {
         # This is entirely optional. If you want do something that only
