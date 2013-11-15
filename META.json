@@ -4,7 +4,7 @@
       "Daisuke Maki C<< <daisuke@endeworks.jp> >>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v0.8.3, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Minilla/v0.8.4, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "perl_5"
    ],
@@ -75,7 +75,7 @@
          "web" : "https://github.com/lestrrat/Queue-Q4M-Worker"
       }
    },
-   "version" : "0.05",
+   "version" : "0.06",
    "x_contributors" : [
       "Neil Bowers <neil@bowers.com>",
       "Daisuke Maki <lestrrat+github@gmail.com>"

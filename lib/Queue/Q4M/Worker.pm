@@ -18,7 +18,7 @@ use Class::Accessor::Lite
     ) ]
 ;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 my $GUARD_CB;
 BEGIN {
